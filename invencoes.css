@@ -52,6 +52,7 @@ button {
   height: 54rem;
   margin: 0 auto;
   overflow: hidden;
+  border-radius: 1.2rem;
 }
 
 .introduction-image img {
