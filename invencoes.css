@@ -1,0 +1,510 @@
+:root {
+  --navy: #292e4b;
+  --white: #ffffff;
+  --black: #000000;
+  --electricity-gray: #8a8a8a;
+  --internet-blue: #002c39;
+  --content-width: 130rem;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 32rem;
+  overflow-x: hidden;
+  color: var(--black);
+  background: var(--white);
+  font-family: "Gilda Display", Georgia, serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+}
+
+/* INTRODUÇÃO */
+
+.inventions-introduction {
+  padding: 2rem 2.2rem 6.6rem;
+  background: var(--white);
+}
+
+.introduction-image {
+  width: min(100%, 143.3rem);
+  height: 54rem;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.introduction-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.introduction-content {
+  width: min(100%, 141rem);
+  margin: 0 auto;
+}
+
+.introduction-content h1 {
+  margin: 2.2rem 0 2.4rem;
+  text-align: center;
+  font-size: clamp(3.4rem, 3.5vw, 5rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.introduction-content p {
+  font-size: 1.6rem;
+  line-height: 1.25;
+}
+
+/* ESTRUTURA DAS SEÇÕES */
+
+.invention-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.invention-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: min(calc(100% - 4.8rem), var(--content-width));
+  margin: 0 auto;
+}
+
+.invention-copy h2 {
+  text-align: center;
+  font-size: 4rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.invention-copy p {
+  font-size: 1.6rem;
+  line-height: 1.25;
+}
+
+.invention-copy blockquote {
+  font-size: 1.6rem;
+  font-style: normal;
+  line-height: 1.25;
+}
+
+.invention-image {
+  overflow: hidden;
+  border-radius: 2rem;
+}
+
+.invention-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* RODA */
+
+.wheel-section {
+  position: relative;
+  isolation: isolate;
+  min-height: 98rem;
+  color: var(--white);
+  background: #050505;
+}
+
+.wheel-background {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image: url("fotos/roda-fundo.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.wheel-section::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.wheel-layout {
+  position: relative;
+  z-index: 2;
+  grid-template-columns: minmax(0, 1fr) 61.5rem;
+  gap: 5.5rem;
+  min-height: 98rem;
+}
+
+.wheel-copy {
+  display: flex;
+  flex-direction: column;
+  padding: 3.6rem 0 7rem;
+}
+
+.wheel-copy h2 {
+  margin-bottom: 9rem;
+}
+
+.wheel-copy p + p {
+  margin-top: 9rem;
+}
+
+.wheel-copy blockquote {
+  margin-top: auto;
+}
+
+.wheel-image {
+  width: 61.5rem;
+  height: 84rem;
+  margin: 6rem 0;
+}
+
+/* ELETRICIDADE */
+
+.electricity-section {
+  min-height: 92rem;
+  color: var(--white);
+  background: var(--electricity-gray);
+}
+
+.electricity-layout {
+  grid-template-columns: 62rem minmax(0, 1fr);
+  gap: 10.5rem;
+  min-height: 92rem;
+  padding: 4.5rem 0;
+}
+
+.electricity-image {
+  width: 62rem;
+  height: 82.8rem;
+}
+
+.electricity-copy {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.8rem 6rem 0;
+}
+
+.electricity-copy h2 {
+  margin-bottom: 5.6rem;
+}
+
+.electricity-copy p + p {
+  margin-top: 7.5rem;
+}
+
+.electricity-copy blockquote {
+  max-width: 47rem;
+  margin: auto auto 0;
+}
+
+/* INTERNET */
+
+.internet-section {
+  min-height: 98.5rem;
+  color: var(--white);
+  background: var(--internet-blue);
+}
+
+.internet-layout {
+  grid-template-columns: minmax(0, 1fr) 62rem;
+  gap: 6.5rem;
+  min-height: 98.5rem;
+  padding: 4.5rem 0 7rem;
+}
+
+.internet-copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.internet-copy h2 {
+  margin-bottom: 8rem;
+}
+
+.internet-copy p + p {
+  margin-top: 8rem;
+}
+
+.internet-copy blockquote {
+  margin-top: auto;
+}
+
+.internet-image {
+  width: 62rem;
+  height: 83.5rem;
+}
+
+/* RODAPÉ PADRONIZADO */
+
+.site-footer {
+  display: grid;
+  grid-template-columns: 1.45fr 0.8fr 0.8fr 1fr;
+  gap: 5.4rem;
+  min-height: 20.8rem;
+  padding: 2.3rem max(4.2rem, calc((100% - 121.5rem) / 2));
+  color: var(--white);
+  background: var(--navy);
+  font-family: "Funnel Sans", Arial, sans-serif;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  align-self: center;
+  font-family: "Gilda Display", Georgia, serif;
+  font-size: 2.4rem;
+}
+
+.footer-brand img {
+  width: 9.6rem;
+  height: 9.6rem;
+  border-radius: 4rem;
+  object-fit: cover;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding-top: 0.1rem;
+  font-size: 1.1rem;
+}
+
+.footer-column h2 {
+  margin-bottom: 0.4rem;
+  font-family: "Funnel Sans", Arial, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.footer-column a:hover,
+.footer-column a:focus-visible {
+  color: #ffd978;
+}
+
+.footer-column--info p {
+  margin-bottom: 0.9rem;
+  line-height: 1.3;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 122rem) {
+  .inventions-introduction {
+    padding-right: 2.8rem;
+    padding-left: 2.8rem;
+  }
+
+  .invention-layout {
+    width: min(calc(100% - 5.6rem), 110rem);
+  }
+
+  .wheel-layout {
+    grid-template-columns: minmax(0, 1fr) 50rem;
+    gap: 4rem;
+  }
+
+  .wheel-image {
+    width: 50rem;
+  }
+
+  .electricity-layout {
+    grid-template-columns: 50rem minmax(0, 1fr);
+    gap: 6rem;
+  }
+
+  .electricity-image {
+    width: 50rem;
+  }
+
+  .internet-layout {
+    grid-template-columns: minmax(0, 1fr) 50rem;
+    gap: 5rem;
+  }
+
+  .internet-image {
+    width: 50rem;
+  }
+
+  .wheel-copy h2,
+  .internet-copy h2 {
+    margin-bottom: 5rem;
+  }
+
+  .wheel-copy p + p,
+  .internet-copy p + p {
+    margin-top: 5rem;
+  }
+
+  .electricity-copy h2 {
+    margin-bottom: 4rem;
+  }
+
+  .electricity-copy p + p {
+    margin-top: 4.5rem;
+  }
+
+  .site-footer {
+    gap: 3.2rem;
+  }
+}
+
+@media (max-width: 98rem) {
+  .introduction-image {
+    height: auto;
+    aspect-ratio: 1433 / 540;
+  }
+
+  .invention-layout {
+    grid-template-columns: 1fr;
+    width: min(calc(100% - 4.8rem), 72rem);
+    min-height: 0;
+    padding: 5rem 0;
+  }
+
+  .wheel-section,
+  .electricity-section,
+  .internet-section {
+    min-height: 0;
+  }
+
+  .wheel-copy,
+  .electricity-copy,
+  .internet-copy {
+    display: block;
+    padding: 0;
+  }
+
+  .wheel-copy h2,
+  .electricity-copy h2,
+  .internet-copy h2 {
+    margin-bottom: 3.5rem;
+  }
+
+  .wheel-copy p + p,
+  .electricity-copy p + p,
+  .internet-copy p + p {
+    margin-top: 3rem;
+  }
+
+  .invention-copy blockquote {
+    margin: 4rem 0 0;
+    text-align: center;
+  }
+
+  .wheel-image,
+  .electricity-image,
+  .internet-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    margin: 5rem 0 0;
+  }
+
+  .electricity-image {
+    order: 2;
+  }
+
+  .electricity-copy {
+    order: 1;
+  }
+
+  .site-footer {
+    grid-template-columns: 1.4fr 1fr 1fr;
+  }
+
+  .footer-column--info {
+    grid-column: 2 / 4;
+  }
+}
+
+@media (max-width: 64rem) {
+  .inventions-introduction {
+    padding: 1.8rem 1.8rem 4.8rem;
+  }
+
+  .introduction-image {
+    aspect-ratio: 16 / 9;
+  }
+
+  .introduction-content h1 {
+    margin: 2.4rem 0 2rem;
+    font-size: 3.2rem;
+  }
+
+  .introduction-content p,
+  .invention-copy p,
+  .invention-copy blockquote {
+    font-size: 1.7rem;
+    line-height: 1.45;
+  }
+
+  .invention-layout {
+    width: calc(100% - 3.6rem);
+    padding: 4rem 0;
+  }
+
+  .invention-copy h2 {
+    font-size: 3.6rem;
+  }
+
+  .wheel-copy h2,
+  .electricity-copy h2,
+  .internet-copy h2 {
+    margin-bottom: 3rem;
+  }
+
+  .wheel-copy p + p,
+  .electricity-copy p + p,
+  .internet-copy p + p {
+    margin-top: 2.8rem;
+  }
+
+  .wheel-image,
+  .electricity-image,
+  .internet-image {
+    margin-top: 4rem;
+    border-radius: 1.4rem;
+  }
+
+  .site-footer {
+    grid-template-columns: 1fr 1fr;
+    gap: 3.4rem 2.4rem;
+    padding: 3.4rem 2.4rem;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-column--info {
+    grid-column: 1 / -1;
+  }
+}

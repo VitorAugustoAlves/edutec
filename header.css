@@ -1,0 +1,217 @@
+/* HEADER COMPARTILHADO ENTRE AS PÁGINAS */
+
+.site-header {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 43rem 1fr;
+  align-items: end;
+  width: 100%;
+  height: 13.3rem;
+  min-height: 13.3rem;
+  padding: 2.1rem max(0rem, calc((100% - 152.1rem) / 2)) 1.6rem;
+  color: #ffffff;
+  background: #292e4b;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 2.3rem;
+  width: max-content;
+  margin-left: 3rem;
+}
+
+.brand__logo {
+  width: 9.6rem;
+  height: 9.6rem;
+  border-radius: 4rem;
+  object-fit: cover;
+}
+
+.brand__name {
+  color: #ffffff;
+  font-family: "Gilda Display", Georgia, serif;
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: 1.14;
+}
+
+.menu-button {
+  display: none;
+}
+
+.main-navigation {
+  position: static;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6rem;
+  width: max-content;
+  padding: 0;
+  white-space: nowrap;
+  background: transparent;
+  font-family: "Gilda Display", Georgia, serif;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.main-navigation a {
+  padding: 0;
+  border: 0;
+  transition: color 160ms ease;
+}
+
+.main-navigation a:hover,
+.main-navigation a:focus-visible,
+.main-navigation a.is-current {
+  color: #ffd06f;
+}
+
+.main-navigation a.is-current::after {
+  display: none;
+}
+
+@media (max-width: 140rem) {
+  .site-header {
+    grid-template-columns: 36rem 1fr;
+  }
+
+  .brand__name {
+    font-size: 2.4rem;
+  }
+
+  .main-navigation {
+    gap: 5.2rem;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 110rem) and (min-width: 90.1rem) {
+  .site-header {
+    grid-template-columns: 30rem 1fr;
+    padding-right: 1.8rem;
+    padding-left: 1.8rem;
+  }
+
+  .brand {
+    gap: 1.4rem;
+    margin-left: 0;
+  }
+
+  .brand__logo {
+    width: 7.2rem;
+    height: 7.2rem;
+    border-radius: 2.8rem;
+  }
+
+  .brand__name {
+    font-size: 2.1rem;
+  }
+
+  .main-navigation {
+    gap: 4.8rem;
+    padding-left: 0;
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 90rem) {
+  .site-header {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    height: 9.6rem;
+    min-height: 9.6rem;
+    padding: 1.2rem 2.4rem;
+  }
+
+  .brand {
+    gap: 1.4rem;
+    margin-left: 0;
+  }
+
+  .brand__logo {
+    width: 7.2rem;
+    height: 7.2rem;
+    border-radius: 2.8rem;
+  }
+
+  .brand__name {
+    font-size: 2.1rem;
+  }
+
+  .menu-button {
+    display: grid;
+    width: 4.8rem;
+    height: 4.8rem;
+    padding: 1.1rem;
+    cursor: pointer;
+    border: 0.1rem solid rgba(255, 255, 255, 0.35);
+    border-radius: 0.8rem;
+    background: transparent;
+    place-content: center;
+    gap: 0.5rem;
+  }
+
+  .menu-button span {
+    display: block;
+    width: 2.4rem;
+    height: 0.2rem;
+    border-radius: 0;
+    background: #ffffff;
+  }
+
+  .main-navigation {
+    position: absolute;
+    top: 9.6rem;
+    right: 0;
+    left: 0;
+    display: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.8rem 3rem;
+    width: auto;
+    padding: 2.4rem;
+    white-space: normal;
+    background: rgba(41, 46, 75, 0.98);
+    font-size: 2rem;
+  }
+
+  .main-navigation.is-open {
+    display: flex;
+  }
+
+  .main-navigation a {
+    padding: 0;
+    border: 0;
+  }
+}
+
+@media (max-width: 68rem) {
+  .site-header {
+    height: 8.2rem;
+    min-height: 8.2rem;
+    padding: 1rem 1.6rem;
+  }
+
+  .brand__logo {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 2.2rem;
+  }
+
+  .brand__name {
+    font-size: 1.6rem;
+  }
+
+  .main-navigation {
+    top: 8.2rem;
+    gap: 1.4rem 2rem;
+    padding: 2rem 1.6rem;
+    font-size: 1.8rem;
+  }
+}
