@@ -28,8 +28,8 @@
     rel="stylesheet"
   >
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="header.css">
+  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="header.css?v=5">
 </head>
 
 <body>
@@ -72,11 +72,11 @@
         id="main-navigation"
         aria-label="Navegação principal"
       >
+        <a class="is-current" href="index.html" aria-current="page">Home</a>
         <a href="jornada.html">Jornada</a>
         <a href="eras.html">Eras</a>
         <a href="ia.html">IA</a>
         <a href="invencoes.html">Invenções</a>
-        <a href="novidades.html">Novidades</a>
         <a href="curiosidades.html">Curiosidades</a>
         <a href="jogo.html">Jogo</a>
         <a href="creditos.html">Créditos</a>
@@ -378,17 +378,24 @@
         </a>
 
         <a
-          class="topic-card topic-card--news"
-          href="novidades.html"
+          class="topic-card topic-card--home"
+          href="#inicio"
         >
-          <span class="topic-card__icon">
-            <img
-              src="fotos/icone-novidades.png"
-              alt=""
+          <span
+            class="topic-card__icon topic-card__icon--home"
+            aria-hidden="true"
+          >
+            <svg
+              viewBox="0 0 64 64"
+              xmlns="http://www.w3.org/2000/svg"
             >
+              <path d="M8 30 32 10l24 20" />
+              <path d="M14 27v27h36V27" />
+              <path d="M26 54V38h12v16" />
+            </svg>
           </span>
 
-          <span>Novidades</span>
+          <span>Home</span>
         </a>
 
         <div class="orbit-core">
@@ -429,7 +436,6 @@
     <h2>PROJETO</h2>
 
     <a href="curiosidades.html">Curiosidades</a>
-    <a href="novidades.html">Atualidades</a>
     <a href="creditos.html">Créditos</a>
     <a href="jogo.html">Jogo</a>
   </div>
@@ -447,6 +453,10 @@
       trabalhoedutec@gmail.com
     </p>
   </div>
+
+  <a class="back-to-top" href="#inicio" aria-label="Voltar ao topo">
+    <span aria-hidden="true">↑</span>
+  </a>
 </footer>
 
   <script src="script.js"></script>

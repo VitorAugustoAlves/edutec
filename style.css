@@ -375,6 +375,11 @@ button {
   background: #e5f3ff;
 }
 
+.topic-card__icon--home {
+  color: #292e4b;
+  background: #eef0ff;
+}
+
 .topic-card--eras {
   top: 12.6rem;
   left: 16.8rem;
@@ -401,7 +406,7 @@ button {
   font-size: 1.6rem;
 }
 
-.topic-card--news {
+.topic-card--home {
   top: 69rem;
   left: 74.3rem;
 }

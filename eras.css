@@ -1,0 +1,405 @@
+:root {
+    --navy: #292e4b;
+    --text-color: #111111;
+    --white: #ffffff;
+
+    --biotechnology-start: #adeff2;
+    --biotechnology-end: #59e6ff;
+
+    --iot-start: #bdf2ad;
+    --iot-end: #59e6ff;
+
+    --digital-start: #bcb1ff;
+    --digital-end: #fba3d4;
+
+    --content-width: 129.5rem;
+}
+
+/* 1rem = 10px */
+html {
+    font-size: 62.5%;
+    scroll-behavior: smooth;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 32rem;
+    background-color: var(--white);
+    color: var(--text-color);
+    font-family: "Gilda Display", Georgia, serif;
+    font-size: 1.8rem;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* BANNER */
+
+.hero-atualidade {
+    width: min(100%, 151.3rem);
+    height: 44.5rem;
+    margin: 5.9rem auto 0;
+    overflow: hidden;
+}
+
+.hero-atualidade img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* INTRODUÇÃO */
+
+.introduction {
+    min-height: 45.5rem;
+    padding: 4rem 2rem 5rem;
+}
+
+.content-wrapper {
+    width: min(100%, var(--content-width));
+    margin: 0 auto;
+}
+
+.introduction h1 {
+    margin-bottom: 5.5rem;
+    text-align: center;
+    font-size: 5rem;
+    font-weight: 400;
+}
+
+.introduction-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.introduction-text p {
+    font-size: 1.8rem;
+    line-height: 1.35;
+    text-align: center;
+}
+
+/* SEÇÕES */
+
+.technology-section {
+    width: 100%;
+    max-width: none;
+    min-height: 89.2rem;
+    margin: 0;
+    padding: 7rem 4rem;
+
+    display: flex;
+    align-items: center;
+
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.b biotechnology {
+    min-height: 89.2rem;
+}
+
+.biotecnology {
+    background: linear-gradient(
+        124deg,
+        var(--biotechnology-start) 27%,
+        var(--biotechnology-end) 99%
+    );
+}
+
+.biotecnology,
+.biotechnology {
+    background: linear-gradient(
+        124deg,
+        var(--biotechnology-start) 27%,
+        var(--biotechnology-end) 99%
+    );
+}
+
+.internet-things {
+    min-height: 96.9rem;
+    background: linear-gradient(
+        122deg,
+        var(--iot-start) 27%,
+        var(--iot-end) 99%
+    );
+}
+
+.digital-challenges {
+    min-height: 97.8rem;
+    background: linear-gradient(
+        122deg,
+        var(--digital-start) 27%,
+        var(--digital-end) 99%
+    );
+}
+
+.section-inner {
+    width: min(100%, var(--content-width));
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42rem;
+    align-items: center;
+    column-gap: 7rem;
+    row-gap: 4rem;
+}
+
+.section-inner--reverse {
+    grid-template-columns: 47.5rem minmax(0, 1fr);
+}
+
+.section-content h2 {
+    margin-bottom: 5rem;
+    font-size: 4rem;
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+}
+
+.section-content p,
+.section-wide-text {
+    font-size: 1.8rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
+.section-wide-text {
+    grid-column: 1 / -1;
+}
+
+.section-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.section-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.biotecnology-image,
+.biotechnology-image {
+    width: 40rem;
+    height: 40rem;
+    margin: 0 auto;
+    border-radius: 50%;
+    background-color: var(--white);
+}
+
+.biotecnology-image img,
+.biotechnology-image img {
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.iot-image {
+    width: 47.5rem;
+    height: 67.1rem;
+    border-radius: 7.5rem;
+}
+
+.iot-image img {
+    border-radius: 7.5rem;
+}
+
+.challenges-image {
+    width: 47rem;
+    height: 65.2rem;
+    border-radius: 4.1rem;
+    background-color: var(--white);
+}
+
+.challenges-image img {
+    object-fit: contain;
+    border-radius: 4.1rem;
+}
+
+/* RODAPÉ PADRONIZADO */
+
+.site-footer {
+    display: grid;
+    grid-template-columns: 1.45fr 0.8fr 0.8fr 1fr;
+    gap: 5.4rem;
+    min-height: 20.8rem;
+    padding: 2.3rem max(4.2rem, calc((100% - 121.5rem) / 2));
+    color: var(--white);
+    background: var(--navy);
+    font-family: "Funnel Sans", Arial, sans-serif;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    gap: 1.8rem;
+    font-family: "Gilda Display", Georgia, serif;
+    font-size: 2.4rem;
+}
+
+.footer-brand img {
+    width: 9.6rem;
+    height: 9.6rem;
+    border-radius: 4rem;
+    object-fit: cover;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding-top: 0.1rem;
+    font-size: 1.1rem;
+}
+
+.footer-column h2 {
+    margin-bottom: 0.4rem;
+    font-family: "Funnel Sans", Arial, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+}
+
+.footer-column a:hover,
+.footer-column a:focus-visible {
+    color: #ffd978;
+}
+
+.footer-column--info p {
+    margin-bottom: 0.9rem;
+    line-height: 1.3;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1220px) {
+    .site-footer {
+        gap: 3.2rem;
+    }
+}
+
+@media (max-width: 980px) {
+    .site-footer {
+        grid-template-columns: 1.4fr 1fr 1fr;
+    }
+
+    .footer-column--info {
+        grid-column: 2 / 4;
+    }
+}
+
+@media (max-width: 1250px) {
+    .hero-atualidade {
+        margin-top: 3rem;
+    }
+}
+
+@media (max-width: 950px) {
+    .technology-section {
+        min-height: auto;
+        padding: 7rem 3rem;
+    }
+
+    .section-inner,
+    .section-inner--reverse {
+        grid-template-columns: 1fr;
+    }
+
+    .section-image {
+        grid-row: auto;
+        justify-self: center;
+    }
+
+    .section-wide-text {
+        grid-column: 1;
+    }
+
+    .iot-image {
+        order: 2;
+    }
+
+    .internet-things .section-content {
+        order: 1;
+    }
+
+    .internet-things .section-wide-text {
+        order: 3;
+    }
+}
+
+@media (max-width: 650px) {
+    .hero-atualidade {
+        height: 30rem;
+    }
+
+    .introduction {
+        padding: 4rem 2rem 5rem;
+    }
+
+    .introduction h1 {
+        margin-bottom: 3rem;
+        font-size: 4.2rem;
+    }
+
+    .technology-section {
+        padding: 6rem 2rem;
+        border-radius: 1.5rem;
+    }
+
+    .section-content h2 {
+        margin-bottom: 2rem;
+        font-size: 3.4rem;
+    }
+
+    .site-footer {
+        grid-template-columns: 1fr 1fr;
+        gap: 3.4rem 2.4rem;
+        padding: 3.4rem 2.4rem;
+    }
+
+    .footer-brand,
+    .footer-column--info {
+        grid-column: 1 / -1;
+    }
+
+    .section-content p,
+    .section-wide-text,
+    .introduction-text p {
+        font-size: 1.7rem;
+        line-height: 1.55;
+    }
+
+    .biotechnology-image {
+        width: min(100%, 36rem);
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    .iot-image,
+    .challenges-image {
+        width: min(100%, 43rem);
+        height: auto;
+        aspect-ratio: 0.7;
+    }
+}
