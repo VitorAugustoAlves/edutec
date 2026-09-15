@@ -1,0 +1,252 @@
+:root {
+  --navy: #292e4b;
+  --charcoal: #303030;
+  --white: #ffffff;
+}
+
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-width: 32rem;
+  overflow-x: hidden;
+  color: var(--white);
+  background: var(--charcoal);
+  font-family: "Funnel Sans", Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+}
+
+.credits-hero {
+  width: 100%;
+  height: 30.2rem;
+  overflow: hidden;
+  background: #42a0ad;
+}
+
+.credits-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.team-section {
+  min-height: 52rem;
+  padding: 3.8rem max(4rem, calc((100% - 135rem) / 2)) 8rem;
+  background: var(--charcoal);
+}
+
+.team-section h1 {
+  margin-bottom: 7rem;
+  text-align: center;
+  font-family: "Gilda Display", Georgia, serif;
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.team-list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
+  gap: 4rem;
+}
+
+.member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.member img {
+  width: 12rem;
+  height: 12rem;
+  margin-bottom: 2.2rem;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0.3rem 0.7rem rgba(0, 0, 0, 0.45);
+}
+
+.member h2 {
+  font-family: "Gilda Display", Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.site-footer {
+  display: grid;
+  grid-template-columns: 1.45fr 0.8fr 0.8fr 1fr;
+  gap: 5.4rem;
+  min-height: 20.8rem;
+  padding: 2.3rem max(4.2rem, calc((100% - 121.5rem) / 2));
+  color: var(--white);
+  background: var(--navy);
+  font-family: "Funnel Sans", Arial, sans-serif;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  gap: 1.8rem;
+  font-family: "Gilda Display", Georgia, serif;
+  font-size: 2.4rem;
+}
+
+.footer-brand img {
+  width: 9.6rem;
+  height: 9.6rem;
+  border-radius: 4rem;
+  object-fit: cover;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding-top: 0.1rem;
+  font-size: 1.1rem;
+}
+
+.footer-column h2 {
+  margin-bottom: 0.4rem;
+  font-family: "Funnel Sans", Arial, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.footer-column a:hover,
+.footer-column a:focus-visible {
+  color: #ffd978;
+}
+
+.footer-column--info p {
+  margin-bottom: 0.9rem;
+  line-height: 1.3;
+}
+
+@media (max-width: 122rem) {
+  .team-list {
+    gap: 2.4rem;
+  }
+
+  .site-footer {
+    gap: 3.2rem;
+  }
+}
+
+@media (max-width: 98rem) {
+  .credits-hero {
+    height: 25rem;
+  }
+
+  .team-section {
+    padding-top: 4.5rem;
+  }
+
+  .team-section h1 {
+    margin-bottom: 5rem;
+  }
+
+  .team-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5rem 3rem;
+  }
+
+  .site-footer {
+    grid-template-columns: 1.4fr 1fr 1fr;
+  }
+
+  .footer-column--info {
+    grid-column: 2 / 4;
+  }
+}
+
+@media (max-width: 64rem) {
+  .credits-hero {
+    height: 18rem;
+  }
+
+  .team-section {
+    min-height: 0;
+    padding: 4rem 2rem 6rem;
+  }
+
+  .team-section h1 {
+    margin-bottom: 4rem;
+    font-size: 2.6rem;
+  }
+
+  .team-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4.5rem 2rem;
+  }
+
+  .member img {
+    width: 10.5rem;
+    height: 10.5rem;
+    margin-bottom: 1.7rem;
+  }
+
+  .member h2 {
+    font-size: 1.6rem;
+  }
+
+  .site-footer {
+    grid-template-columns: 1fr 1fr;
+    gap: 3.4rem 2.4rem;
+    padding: 3.4rem 2.4rem;
+  }
+
+  .footer-brand,
+  .footer-column--info {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 40rem) {
+  .credits-hero {
+    height: 14rem;
+  }
+
+  .team-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
