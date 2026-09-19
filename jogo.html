@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Jogue uma aventura curta pelas principais eras da evolução tecnológica."
+  >
+  <title>Jornada da Evolução | Evolução Tecnológica</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@400;500;600;700&family=Gilda+Display&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="header.css?v=5">
+  <link rel="stylesheet" href="jogo.css?v=1">
+</head>
+
+<body>
+  <header class="site-header" id="inicio">
+    <a class="brand" href="index.html" aria-label="Evolução Tecnológica — página inicial">
+      <img class="brand__logo" src="fotos/logo.png" alt="">
+      <span class="brand__name">EVOLUÇÃO<br>TECNOLÓGICA</span>
+    </a>
+
+    <button
+      class="menu-button"
+      type="button"
+      aria-expanded="false"
+      aria-controls="main-navigation"
+      aria-label="Abrir menu"
+    >
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="main-navigation" id="main-navigation" aria-label="Navegação principal">
+      <a href="index.html">Home</a>
+      <a href="jornada.html">Jornada</a>
+      <a href="eras.html">Eras</a>
+      <a href="ia.html">IA</a>
+      <a href="invencoes.html">Invenções</a>
+      <a href="curiosidades.html">Curiosidades</a>
+      <a class="is-current" href="jogo.html" aria-current="page">Jogo</a>
+      <a href="creditos.html">Créditos</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="game-intro" aria-labelledby="game-title">
+      <p class="eyebrow">UMA AVENTURA ATRAVÉS DO TEMPO</p>
+      <h1 id="game-title">Jornada da <span>Evolução</span></h1>
+      <p class="game-intro__text">
+        Recupere as invenções perdidas e atravesse três eras da tecnologia,
+        da primeira roda até o mundo digital.
+      </p>
+    </section>
+
+    <section class="game-section" aria-label="Jogo Jornada da Evolução">
+      <div class="game-shell">
+        <div class="game-hud" aria-live="polite">
+          <div class="hud-item">
+            <span class="hud-label">ERA</span>
+            <strong id="era-label">PRIMEIRAS INVENÇÕES</strong>
+          </div>
+          <div class="hud-item hud-item--center">
+            <span class="hud-label">INVENÇÕES</span>
+            <strong><span id="invention-count">0</span>/6</strong>
+          </div>
+          <div class="hud-item hud-item--lives">
+            <span class="hud-label">ENERGIA</span>
+            <strong id="lives" aria-label="3 pontos de energia">♥ ♥ ♥</strong>
+          </div>
+        </div>
+
+        <div class="canvas-wrap" id="game-container">
+          <canvas
+            id="game-canvas"
+            width="1200"
+            height="600"
+            tabindex="0"
+            aria-label="Jogo de plataforma. Use as setas ou as teclas A e D para andar e espaço para pular."
+          ></canvas>
+
+          <div class="game-overlay" id="start-screen">
+            <div class="overlay-card">
+              <span class="overlay-icon" aria-hidden="true">⚙</span>
+              <p class="overlay-kicker">A HISTÓRIA PRECISA DE VOCÊ</p>
+              <h2>Pronto para viajar no tempo?</h2>
+              <p>
+                Pule sobre os obstáculos, derrote os bugs e colete as seis
+                invenções que transformaram a humanidade.
+              </p>
+              <button class="primary-button" id="start-button" type="button">
+                INICIAR JORNADA <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="era-toast" id="era-toast" aria-live="polite">
+            <span id="era-number">ERA 1</span>
+            <strong id="era-title">PRIMEIRAS INVENÇÕES</strong>
+            <small id="era-years">3.500 a.C.</small>
+          </div>
+        </div>
+
+        <div class="game-controls">
+          <div class="keyboard-help" aria-label="Controles do teclado">
+            <span><kbd>←</kbd><kbd>→</kbd> ou <kbd>A</kbd><kbd>D</kbd> MOVER</span>
+            <span><kbd>↑</kbd> ou <kbd>ESPAÇO</kbd> PULAR</span>
+          </div>
+
+          <div class="touch-controls" aria-label="Controles para tela sensível ao toque">
+            <div>
+              <button class="touch-button" type="button" data-control="left" aria-label="Mover para a esquerda">←</button>
+              <button class="touch-button" type="button" data-control="right" aria-label="Mover para a direita">→</button>
+            </div>
+            <button class="touch-button touch-button--jump" type="button" data-control="jump" aria-label="Pular">↑</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-to-play" aria-labelledby="how-title">
+      <div>
+        <p class="eyebrow">MISSÃO</p>
+        <h2 id="how-title">Como jogar</h2>
+      </div>
+      <ol>
+        <li><span>01</span><p><strong>Explore</strong> três cenários históricos curtos.</p></li>
+        <li><span>02</span><p><strong>Colete</strong> as invenções espalhadas pelo caminho.</p></li>
+        <li><span>03</span><p><strong>Pule</strong> sobre os inimigos para desativá-los.</p></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="footer-brand" href="index.html" aria-label="Voltar à página inicial">
+      <img src="fotos/logo.png" alt="">
+      <span>EVOLUÇÃO TECNOLÓGICA</span>
+    </a>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="eras.html">Eras</a>
+      <a href="invencoes.html">Invenções</a>
+      <a href="creditos.html">Créditos</a>
+    </div>
+    <p>Projeto educacional sobre a história da tecnologia.</p>
+    <a class="back-to-top" href="#inicio" aria-label="Voltar ao topo"><span aria-hidden="true">↑</span></a>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="jogo.js"></script>
+</body>
+</html>
