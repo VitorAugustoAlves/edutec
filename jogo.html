@@ -12,11 +12,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@400;500;600;700&family=Gilda+Display&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@400;500&family=Gilda+Display&family=Inter:wght@400;500&display=swap"
     rel="stylesheet"
   >
   <link rel="stylesheet" href="header.css?v=5">
-  <link rel="stylesheet" href="jogo.css?v=1">
+  <link rel="stylesheet" href="jogo.css?v=8">
 </head>
 
 <body>
@@ -50,28 +50,40 @@
 
   <main>
     <section class="game-intro" aria-labelledby="game-title">
-      <p class="eyebrow">UMA AVENTURA ATRAVÉS DO TEMPO</p>
-      <h1 id="game-title">Jornada da <span>Evolução</span></h1>
-      <p class="game-intro__text">
-        Recupere as invenções perdidas e atravesse três eras da tecnologia,
-        da primeira roda até o mundo digital.
-      </p>
+      <div class="game-intro__copy">
+        <p class="eyebrow">UMA AVENTURA ATRAVÉS DO TEMPO</p>
+        <h1 id="game-title">Jornada da <span>Evolução</span></h1>
+        <p class="game-intro__text">
+          Ajude Richard Spanhol a recuperar as invenções perdidas e atravesse
+          quatro eras da tecnologia antes de chegar ao confronto final.
+        </p>
+        <p class="player-name">PROTAGONISTA: RICHARD SPANHOL</p>
+      </div>
+
     </section>
 
     <section class="game-section" aria-label="Jogo Jornada da Evolução">
       <div class="game-shell">
         <div class="game-hud" aria-live="polite">
           <div class="hud-item">
-            <span class="hud-label">ERA</span>
-            <strong id="era-label">PRIMEIRAS INVENÇÕES</strong>
+            <span class="hud-label">FASE</span>
+            <strong id="era-label">1/4 • ÉPOCA DA PEDRA</strong>
           </div>
           <div class="hud-item hud-item--center">
             <span class="hud-label">INVENÇÕES</span>
-            <strong><span id="invention-count">0</span>/6</strong>
+            <strong><span id="invention-count">0</span>/12</strong>
+          </div>
+          <div class="hud-item hud-item--time" aria-live="off">
+            <span class="hud-label">TEMPO</span>
+            <strong id="run-time">00:00</strong>
           </div>
           <div class="hud-item hud-item--lives">
-            <span class="hud-label">ENERGIA</span>
-            <strong id="lives" aria-label="3 pontos de energia">♥ ♥ ♥</strong>
+            <span class="hud-label">CORAÇÕES</span>
+            <strong id="lives" aria-label="3 de 3 corações"><span class="heart">♥</span><span class="heart">♥</span><span class="heart">♥</span></strong>
+          </div>
+          <div class="hud-item hud-item--mode">
+            <span class="hud-label">MODO</span>
+            <strong id="mode-label">NORMAL</strong>
           </div>
         </div>
 
@@ -85,24 +97,21 @@
           ></canvas>
 
           <div class="game-overlay" id="start-screen">
-            <div class="overlay-card">
+            <div class="overlay-card overlay-card--title">
               <span class="overlay-icon" aria-hidden="true">⚙</span>
-              <p class="overlay-kicker">A HISTÓRIA PRECISA DE VOCÊ</p>
-              <h2>Pronto para viajar no tempo?</h2>
-              <p>
-                Pule sobre os obstáculos, derrote os bugs e colete as seis
-                invenções que transformaram a humanidade.
-              </p>
-              <button class="primary-button" id="start-button" type="button">
-                INICIAR JORNADA <span aria-hidden="true">→</span>
+              <p class="overlay-kicker">UMA AVENTURA ATRAVÉS DO TEMPO</p>
+              <h2>Jornada da Evolução</h2>
+              <p>Viaje com Richard Spanhol pelas eras da tecnologia e recupere as invenções perdidas.</p>
+              <button class="primary-button title-play-button" id="open-menu" type="button">
+                JOGAR <span aria-hidden="true">→</span>
               </button>
             </div>
           </div>
 
           <div class="era-toast" id="era-toast" aria-live="polite">
-            <span id="era-number">ERA 1</span>
-            <strong id="era-title">PRIMEIRAS INVENÇÕES</strong>
-            <small id="era-years">3.500 a.C.</small>
+            <span id="era-number">FASE 1</span>
+            <strong id="era-title">ÉPOCA DA PEDRA</strong>
+            <small id="era-years">PRÉ-HISTÓRIA</small>
           </div>
         </div>
 
@@ -110,6 +119,7 @@
           <div class="keyboard-help" aria-label="Controles do teclado">
             <span><kbd>←</kbd><kbd>→</kbd> ou <kbd>A</kbd><kbd>D</kbd> MOVER</span>
             <span><kbd>↑</kbd> ou <kbd>ESPAÇO</kbd> PULAR</span>
+            <span><kbd>1</kbd> CADEIRÃO <kbd>2</kbd> JOIA <kbd>3</kbd> PENSAR <kbd>4</kbd> T-POSE</span>
           </div>
 
           <div class="touch-controls" aria-label="Controles para tela sensível ao toque">
@@ -120,6 +130,23 @@
             <button class="touch-button touch-button--jump" type="button" data-control="jump" aria-label="Pular">↑</button>
           </div>
         </div>
+
+        <div class="music-bar" aria-label="Controle da música">
+          <button class="music-toggle" id="music-toggle" type="button" aria-pressed="true" aria-label="Desativar música">
+            <span aria-hidden="true" id="music-icon">♪</span>
+            <span id="music-status">MÚSICA LIGADA</span>
+          </button>
+
+          <p class="music-track">
+            <span>TOCANDO</span>
+            <strong id="music-track-name">MAIN MENU</strong>
+          </p>
+
+          <label class="volume-control" for="music-volume">
+            <span>VOLUME</span>
+            <input id="music-volume" type="range" min="0" max="100" value="42" aria-label="Volume da música">
+          </label>
+        </div>
       </div>
     </section>
 
@@ -129,29 +156,65 @@
         <h2 id="how-title">Como jogar</h2>
       </div>
       <ol>
-        <li><span>01</span><p><strong>Explore</strong> três cenários históricos curtos.</p></li>
+        <li><span>01</span><p><strong>Explore</strong> quatro fases históricas e o confronto final.</p></li>
         <li><span>02</span><p><strong>Colete</strong> as invenções espalhadas pelo caminho.</p></li>
-        <li><span>03</span><p><strong>Pule</strong> sobre os inimigos para desativá-los.</p></li>
+        <li><span>03</span><p><strong>Enfrente</strong> os inimigos pulando sobre eles.</p></li>
+        <li><span>04</span><p><strong>Atravesse</strong> o portal para chegar à próxima fase.</p></li>
       </ol>
     </section>
   </main>
 
   <footer class="site-footer">
-    <a class="footer-brand" href="index.html" aria-label="Voltar à página inicial">
+    <a
+      class="footer-brand"
+      href="index.html"
+      aria-label="Voltar à página inicial"
+    >
       <img src="fotos/logo.png" alt="">
       <span>EVOLUÇÃO TECNOLÓGICA</span>
     </a>
-    <div class="footer-links">
+
+    <div class="footer-column">
+      <h2>NAVEGAÇÃO</h2>
+
       <a href="index.html">Home</a>
-      <a href="eras.html">Eras</a>
+      <a href="jornada.html">Jornada</a>
       <a href="invencoes.html">Invenções</a>
-      <a href="creditos.html">Créditos</a>
+      <a href="ia.html">IA &amp; Futuro</a>
     </div>
-    <p>Projeto educacional sobre a história da tecnologia.</p>
-    <a class="back-to-top" href="#inicio" aria-label="Voltar ao topo"><span aria-hidden="true">↑</span></a>
+
+    <div class="footer-column">
+      <h2>PROJETO</h2>
+
+      <a href="curiosidades.html">Curiosidades</a>
+      <a href="creditos.html">Créditos</a>
+      <a href="jogo.html">Jogo</a>
+    </div>
+
+    <div class="footer-column footer-column--info">
+      <h2>INFORMAÇÕES</h2>
+
+      <p>
+        Estrada de Itapecerica, 5859<br>
+        São Paulo - SP, Brasil
+      </p>
+
+      <p>
+        (11) 94077-0307<br>
+        trabalhoedutec@gmail.com
+      </p>
+    </div>
+
+    <p class="footer-music-credit">
+      As músicas utilizadas no jogo foram retiradas da trilha sonora de Plants vs. Zombies.
+    </p>
+
+    <a class="back-to-top" href="#inicio" aria-label="Voltar ao topo">
+      <span aria-hidden="true">↑</span>
+    </a>
   </footer>
 
   <script src="script.js"></script>
-  <script src="jogo.js"></script>
+  <script src="jogo.js?v=25"></script>
 </body>
 </html>
