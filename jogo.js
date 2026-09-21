@@ -24,12 +24,14 @@
   const WIDTH = canvas.width;
   const HEIGHT = canvas.height;
   const STAGE_WIDTH = 5200;
+  const BOSS_STAGE_WIDTH = 7600;
+  const BOSS_BUTTON_X = BOSS_STAGE_WIDTH - 210;
   const GROUND_Y = 500;
   const GRAVITY = 1900;
   const MAIN_STAGE_COUNT = 4;
   const TOTAL_ITEMS = 12;
   const PORTAL = { x: 5035, y: 326, w: 105, h: 174 };
-  const keys = { left: false, right: false, jump: false };
+  const keys = { left: false, right: false, jump: false, interact: false };
   const DEV_STAGE_SHORTCUTS = {
     KeyJ: 0,
     KeyK: 1,
@@ -85,12 +87,14 @@
   };
 
   const richardSprite = new Image();
-  richardSprite.src = 'fotos/richard-estados-v4.png';
-  const SPRITE_FRAME_COUNT = 6;
+  richardSprite.src = 'fotos/richard-spanhol-sprites-v2.png?v=1';
+  const SPRITE_FRAME_COUNT = 7;
+  const PLAYER_JUMP_FRAME = 5;
+  const PLAYER_HURT_FRAME = 6;
   let spriteFrames = [];
 
   const richardRunSprite = new Image();
-  richardRunSprite.src = 'fotos/richard-corrida-v4.png';
+  richardRunSprite.src = 'fotos/richard-corrida-v5.png?v=1';
   let runFrames = [];
 
   const richardEmoteSprite = new Image();
@@ -101,8 +105,8 @@
   richardTPoseSprite.src = 'fotos/richard-tpose.png';
   let tPoseFrames = [];
 
-  const RUN_SEQUENCE = [0, 1, 2, 3, 4, 5, 6, 7];
-  const IDLE_SEQUENCE = [0, 1, 2, 3, 2, 1];
+  const RUN_SEQUENCE = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  const IDLE_SEQUENCE = [0];
   const EMOTE_FRAME_BY_KEY = {
     Digit1: 0,
     Numpad1: 0,
@@ -259,7 +263,7 @@
     },
     {
       name: 'ARENA DO FUTURO',
-      years: 'CONFRONTO FINAL • EM BREVE',
+      years: 'CONFRONTO FINAL • FUGA DO SISTEMA',
       difficulty: 1.6,
       skyTop: '#090b1f',
       skyBottom: '#30214e',
@@ -268,13 +272,26 @@
       enemyKind: 'drone',
       boss: true,
       platforms: [
-        [390, 405, 210, 24], [780, 335, 190, 24], [1190, 405, 210, 24],
-        [1600, 325, 190, 24], [2010, 405, 210, 24], [2420, 345, 190, 24],
-        [2830, 405, 210, 24], [3240, 325, 190, 24], [3650, 405, 210, 24],
-        [4060, 345, 190, 24], [4470, 405, 210, 24]
+        [620, 405, 190, 24], [1080, 350, 185, 24], [1540, 400, 210, 24],
+        [2030, 325, 190, 24], [2480, 405, 205, 24], [3000, 345, 190, 24],
+        [3470, 395, 210, 24], [3950, 325, 190, 24], [4380, 405, 180, 24],
+        [4780, 345, 190, 24], [5200, 405, 205, 24], [5620, 330, 190, 24],
+        [6030, 400, 180, 24], [6420, 315, 195, 24], [6810, 390, 200, 24],
+        [7130, 340, 175, 24]
       ],
-      pits: [[1020, 150], [2670, 140], [3900, 140]],
-      obstacles: [['laser', 1450, 24, 120], ['electric', 2250, 62, 50], ['laser', 3490, 24, 130]],
+      pits: [
+        [885, 90], [1800, 105], [2760, 100], [3780, 95], [4620, 100],
+        [5480, 90], [6250, 105], [7040, 90]
+      ],
+      obstacles: [
+        ['laser', 790, 20, 84], ['electric', 1180, 54, 44],
+        ['laser', 1460, 20, 104], ['electric', 2180, 54, 44],
+        ['laser', 2600, 20, 76], ['electric', 3180, 54, 44],
+        ['laser', 3610, 20, 98], ['electric', 4140, 54, 44],
+        ['laser', 4890, 20, 118], ['electric', 5320, 54, 44],
+        ['laser', 5790, 20, 106], ['electric', 6110, 54, 44],
+        ['laser', 6710, 20, 116], ['electric', 7210, 54, 44]
+      ],
       enemies: [],
       items: []
     }
@@ -304,6 +321,22 @@
   let portalPromptCooldown = 0;
   let transitioning = false;
   let transitionTimer = 0;
+  let bossState = null;
+
+  function makeBossState() {
+    return {
+      phase: 'chase',
+      attackTimer: 1.15,
+      attackIndex: 0,
+      projectiles: [],
+      scrollSpeed: selectedDifficulty === 'hardcore' ? 248 : 218,
+      motionPhase: 0,
+      attackFlash: 0,
+      shake: 0,
+      cutsceneTimer: 0,
+      buttonPressed: false
+    };
+  }
 
   function makePlayer() {
     return {
@@ -372,7 +405,12 @@
       phase: itemIndex * 1.7
     }));
     player = makePlayer();
+    if (stage.boss) {
+      player.x = 360;
+      player.checkpoint = 360;
+    }
     cameraX = 0;
+    bossState = stage.boss ? makeBossState() : null;
     stageCollected = 0;
     portalPromptCooldown = 0;
     updateHud();
@@ -543,8 +581,8 @@
   }
 
   function getRunRating(seconds) {
-    if (seconds <= 120) return 3;
-    if (seconds <= 240) return 2;
+    if (seconds <= 180) return 3;
+    if (seconds <= 300) return 2;
     return 1;
   }
 
@@ -554,6 +592,10 @@
 
   function isOverPit(x, width = 1) {
     return pits.some(pit => x + width > pit.x && x < pit.x + pit.w);
+  }
+
+  function getCurrentStageWidth() {
+    return stages[stageIndex]?.boss ? BOSS_STAGE_WIDTH : STAGE_WIDTH;
   }
 
   function hurtPlayer() {
@@ -567,7 +609,21 @@
       return;
     }
 
-    player.x = player.checkpoint;
+    if (stages[stageIndex].boss) {
+      const firstCandidate = Math.max(cameraX + 330, player.x - 80);
+      let safeX = firstCandidate;
+      for (let candidate = firstCandidate; candidate <= cameraX + 720; candidate += 35) {
+        const insidePit = isOverPit(candidate + 8, player.w - 16);
+        const insideObstacle = obstacles.some(obstacle => candidate + player.w > obstacle.x - 18 && candidate < obstacle.x + obstacle.w + 18);
+        if (!insidePit && !insideObstacle) {
+          safeX = candidate;
+          break;
+        }
+      }
+      player.x = Math.min(getCurrentStageWidth() - player.w, safeX);
+    } else {
+      player.x = player.checkpoint;
+    }
     player.y = GROUND_Y - player.h;
     player.vx = 0;
     player.vy = -420;
@@ -621,6 +677,44 @@
     showToast('ATALHO DE DESENVOLVIMENTO', stages[stageIndex].name, index < MAIN_STAGE_COUNT ? `FASE ${index + 1}` : 'CONFRONTO FINAL');
   }
 
+  function startBossShortcut() {
+    if (running) {
+      devTeleportToStage(MAIN_STAGE_COUNT);
+      return;
+    }
+
+    audioUnlocked = true;
+    startScreen.classList.add('is-hidden');
+    stageIndex = MAIN_STAGE_COUNT;
+    totalCollected = TOTAL_ITEMS;
+    lives = DIFFICULTIES[selectedDifficulty].lives;
+    transitioning = false;
+    transitionTimer = 0;
+    runStartedAt = performance.now();
+    runElapsed = 0;
+    loadStage(stageIndex);
+    running = true;
+    lastTime = performance.now();
+    playStageMusic();
+    showToast('ATALHO CTRL + B', stages[stageIndex].name, 'CONFRONTO FINAL');
+    canvas.focus({ preventScroll: true });
+    requestAnimationFrame(loop);
+  }
+
+  function resetWithShortcut() {
+    audioUnlocked = true;
+    startScreen.classList.add('is-hidden');
+    const wasRunning = running;
+    resetGame();
+    running = true;
+    lastTime = performance.now();
+    runStartedAt = lastTime;
+    playStageMusic();
+    showToast('ATALHO CTRL + R', 'JORNADA REINICIADA', 'FASE 1');
+    canvas.focus({ preventScroll: true });
+    if (!wasRunning) requestAnimationFrame(loop);
+  }
+
   function endGame(won) {
     running = false;
     playMusic(MENU_TRACK);
@@ -633,12 +727,12 @@
     overlayCard.innerHTML = won
       ? `<span class="overlay-icon" aria-hidden="true">★</span>
          <p class="overlay-kicker">LINHA DO TEMPO RESTAURADA</p>
-         <h2>Você levou Richard até o futuro!</h2>
-         <p>As ${totalCollected} invenções foram recuperadas e os quatro portais foram atravessados. A curiosidade continua movendo a história.</p>
+         <h2>Richard destruiu o sistema da IA!</h2>
+         <p>As ${totalCollected} invenções foram recuperadas, os quatro portais foram atravessados e o botão de emergência encerrou a perseguição.</p>
          <div class="run-result" aria-label="Classificação: ${rating} de 3 estrelas. Tempo final: ${finalTime}">
            <div class="run-stars">${stars}</div>
            <p class="run-time-result">TEMPO FINAL <strong>${finalTime}</strong></p>
-           <small class="run-rating-note">3 estrelas até 02:00 • 2 até 04:00 • 1 acima de 04:00</small>
+           <small class="run-rating-note">3 estrelas até 03:00 • 2 até 05:00 • 1 acima de 05:00</small>
          </div>
          <div class="end-actions"><button class="primary-button" id="play-again" type="button">JOGAR NOVAMENTE <span aria-hidden="true">↻</span></button><button class="secondary-button" id="back-to-menu" type="button">VOLTAR AO MENU</button></div>`
       : `<span class="overlay-icon" aria-hidden="true">!</span>
@@ -668,6 +762,138 @@
     player.vx = 0;
   }
 
+  function spawnBossAttack() {
+    if (!bossState || bossState.phase !== 'chase') return;
+    const dangerAhead = pits.some(pit => pit.x + pit.w > player.x + 25 && pit.x < player.x + 245)
+      || obstacles.some(obstacle => obstacle.x + obstacle.w > player.x + 25 && obstacle.x < player.x + 215);
+    if (dangerAhead) {
+      bossState.attackTimer = 0.42;
+      return;
+    }
+    const attack = bossState.attackIndex % 7;
+    const playerScreenY = player.y + player.h / 2;
+
+    if (attack === 0) {
+      bossState.projectiles.push({ type: 'ray', age: 0, y: Math.max(120, Math.min(430, playerScreenY)), h: 24 });
+      showToast('ATAQUE DA IA', 'RAIO DE DADOS', 'PULE OU MUDE DE ALTURA', 900);
+    } else if (attack === 1) {
+      bossState.projectiles.push({ type: 'plasma', age: 0, x: 205, y: 185, vx: 285, vy: -80, r: 20 });
+      showToast('ATAQUE DA IA', 'BOMBA DE PLASMA', 'NÃO PARE', 900);
+    } else if (attack === 2) {
+      bossState.projectiles.push({ type: 'gear', age: 0, x: 195, y: GROUND_Y - 52, vx: 270, vy: -190, r: 25, rotation: 0 });
+      showToast('ATAQUE DA IA', 'ENGRENAGEM CORROMPIDA', 'SALTE SOBRE ELA', 900);
+    } else if (attack === 3) {
+      for (let shard = 0; shard < 3; shard += 1) {
+        bossState.projectiles.push({
+          type: 'shard',
+          age: 0,
+          x: 205 - shard * 14,
+          y: 210 + shard * 105,
+          vx: 305 + shard * 22,
+          vy: (shard - 1) * 18,
+          size: 18,
+          rotation: shard * 0.8
+        });
+      }
+      showToast('ATAQUE DA IA', 'RAJADA DE FRAGMENTOS', 'ENCONTRE O ESPAÇO ENTRE ELES', 1000);
+    } else if (attack === 4) {
+      bossState.projectiles.push({ type: 'wave', age: 0, x: 215, y: GROUND_Y - 30, vx: 385, w: 84, h: 30, phase: 0 });
+      showToast('ATAQUE DA IA', 'ONDA DE SOBRECARGA', 'PULE SOBRE O PULSO', 1000);
+    } else if (attack === 5) {
+      bossState.projectiles.push(
+        { type: 'plasma', age: 0, x: 205, y: 155, vx: 335, vy: -35, r: 17 },
+        { type: 'plasma', age: -0.2, x: 190, y: 270, vx: 310, vy: -15, r: 18 }
+      );
+      showToast('ATAQUE DA IA', 'PLASMA DUPLO', 'MUDE DE ALTURA', 850);
+    } else {
+      bossState.projectiles.push(
+        { type: 'gear', age: 0, x: 195, y: GROUND_Y - 54, vx: 325, vy: -225, r: 23, rotation: 0 },
+        { type: 'gear', age: -0.24, x: 185, y: GROUND_Y - 52, vx: 292, vy: -175, r: 21, rotation: 0.6 }
+      );
+      showToast('ATAQUE DA IA', 'ENGRENAGENS EM SÉRIE', 'CONTINUE EM MOVIMENTO', 850);
+    }
+
+    bossState.attackFlash = 0.58;
+    bossState.attackIndex += 1;
+    const lateFight = cameraX > BOSS_STAGE_WIDTH * 0.48;
+    const baseDelay = selectedDifficulty === 'hardcore'
+      ? (lateFight ? 0.72 : 0.92)
+      : (lateFight ? 0.9 : 1.12);
+    bossState.attackTimer = baseDelay + Math.random() * 0.32;
+  }
+
+  function updateBossProjectiles(dt) {
+    if (!bossState || bossState.phase !== 'chase') return;
+    bossState.motionPhase += dt;
+    bossState.attackFlash = Math.max(0, bossState.attackFlash - dt);
+    bossState.attackTimer -= dt;
+    if (bossState.attackTimer <= 0) spawnBossAttack();
+
+    const playerOnScreen = { x: player.x - cameraX, y: player.y, w: player.w, h: player.h };
+    for (const projectile of bossState.projectiles) {
+      projectile.age += dt;
+      if (projectile.type === 'ray') {
+        if (projectile.age >= 0.82 && projectile.age <= 1.14) {
+          const hitBox = { x: 190, y: projectile.y - projectile.h / 2, w: WIDTH - 190, h: projectile.h };
+          if (rectsOverlap(playerOnScreen, hitBox)) hurtPlayer();
+        }
+      } else if (projectile.type === 'wave') {
+        projectile.phase += dt * 12;
+        if (projectile.age > 0.5) projectile.x += projectile.vx * dt;
+        const hitBox = { x: projectile.x, y: projectile.y, w: projectile.w, h: projectile.h };
+        if (rectsOverlap(playerOnScreen, hitBox)) hurtPlayer();
+      } else if (projectile.type === 'shard') {
+        if (projectile.age > 0.38) {
+          projectile.x += projectile.vx * dt;
+          projectile.y += projectile.vy * dt;
+          projectile.rotation += dt * 7;
+        }
+        const hitBox = {
+          x: projectile.x - projectile.size * 0.7,
+          y: projectile.y - projectile.size * 0.7,
+          w: projectile.size * 1.4,
+          h: projectile.size * 1.4
+        };
+        if (rectsOverlap(playerOnScreen, hitBox)) hurtPlayer();
+      } else {
+        if (projectile.age > 0.42) {
+          projectile.x += projectile.vx * dt;
+          projectile.vy += 560 * dt;
+          projectile.y += projectile.vy * dt;
+        }
+        if (projectile.type === 'gear') projectile.rotation += dt * 8;
+        const floor = GROUND_Y - projectile.r;
+        if (projectile.y > floor) {
+          projectile.y = floor;
+          projectile.vy *= projectile.type === 'plasma' ? -0.68 : -0.46;
+        }
+        const hitBox = {
+          x: projectile.x - projectile.r * 0.72,
+          y: projectile.y - projectile.r * 0.72,
+          w: projectile.r * 1.44,
+          h: projectile.r * 1.44
+        };
+        if (rectsOverlap(playerOnScreen, hitBox)) hurtPlayer();
+      }
+    }
+
+    bossState.projectiles = bossState.projectiles.filter(projectile => {
+      if (projectile.type === 'ray') return projectile.age < 1.36;
+      return projectile.x < WIDTH + 100 && projectile.age < 5;
+    });
+  }
+
+  function activateShutdownButton() {
+    if (!bossState || bossState.phase !== 'room') return;
+    bossState.phase = 'cutscene';
+    bossState.buttonPressed = true;
+    bossState.cutsceneTimer = 0;
+    bossState.projectiles = [];
+    player.vx = 0;
+    cancelEmote();
+    showToast('SISTEMA INVADIDO', 'DESLIGAMENTO INICIADO', 'A IA ESTÁ COLAPSANDO', 2600);
+  }
+
   function update(dt) {
     if (transitioning) {
       transitionTimer += dt;
@@ -675,8 +901,16 @@
       return;
     }
 
+    if (bossState?.phase === 'cutscene') {
+      bossState.cutsceneTimer += dt;
+      bossState.shake = Math.max(0, 12 * (1 - bossState.cutsceneTimer / 5));
+      if (bossState.cutsceneTimer >= 5.2) endGame(true);
+      return;
+    }
+
     const acceleration = player.grounded ? 1350 : 850;
     const maxSpeed = 320;
+    const bossChase = Boolean(stages[stageIndex].boss && bossState?.phase === 'chase');
 
     if (keys.left || keys.right || keys.jump) cancelEmote();
     if (player.emoteTimer > 0) {
@@ -684,7 +918,14 @@
       if (player.emoteTimer <= 0) cancelEmote();
     }
 
-    if (keys.left) {
+    if (bossChase) {
+      const horizontalInput = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+      const targetSpeed = bossState.scrollSpeed + horizontalInput * 255;
+      const bossAcceleration = player.grounded ? 1750 : 1050;
+      const speedDifference = targetSpeed - player.vx;
+      player.vx += Math.max(-bossAcceleration * dt, Math.min(bossAcceleration * dt, speedDifference));
+      if (horizontalInput !== 0) player.facing = horizontalInput;
+    } else if (keys.left) {
       player.vx = Math.max(player.vx - acceleration * dt, -maxSpeed);
       player.facing = -1;
     } else if (keys.right) {
@@ -705,7 +946,7 @@
     player.vy += GRAVITY * dt;
     player.x += player.vx * dt;
     player.y += player.vy * dt;
-    player.x = Math.max(0, Math.min(STAGE_WIDTH - player.w, player.x));
+    player.x = Math.max(0, Math.min(getCurrentStageWidth() - player.w, player.x));
     player.grounded = false;
 
     const feetWidth = Math.max(12, player.w - 20);
@@ -730,7 +971,7 @@
       return;
     }
 
-    if (!player.checkpointReached && player.x > 2600) {
+    if (!stages[stageIndex].boss && !player.checkpointReached && player.x > 2600) {
       player.checkpoint = 2630;
       player.checkpointReached = true;
       showToast('CHECKPOINT', 'PROGRESSO SALVO', `FASE ${stageIndex + 1}`);
@@ -777,6 +1018,8 @@
       if (rectsOverlap(player, hitBox)) hurtPlayer();
     }
 
+    updateBossProjectiles(dt);
+
     for (const item of collectibles) {
       item.phase += dt * 3;
       const hitBox = { x: item.x, y: item.y + Math.sin(item.phase) * 7, w: item.w, h: item.h };
@@ -790,10 +1033,29 @@
     }
 
     if (!stages[stageIndex].boss && rectsOverlap(player, PORTAL)) enterPortal();
-    if (stages[stageIndex].boss && player.x > 4780) endGame(true);
 
-    const cameraTarget = player.x - WIDTH * 0.36;
-    cameraX += (Math.max(0, Math.min(STAGE_WIDTH - WIDTH, cameraTarget)) - cameraX) * Math.min(1, dt * 5);
+    if (stages[stageIndex].boss) {
+      if (bossState.phase === 'chase') {
+        cameraX = Math.min(BOSS_STAGE_WIDTH - WIDTH, cameraX + bossState.scrollSpeed * dt);
+        player.x = Math.max(cameraX + 300, Math.min(cameraX + WIDTH - player.w - 54, player.x));
+        if (cameraX >= BOSS_STAGE_WIDTH - WIDTH - 0.5) {
+          bossState.phase = 'room';
+          bossState.projectiles = [];
+          player.checkpoint = cameraX + 330;
+          player.checkpointReached = true;
+          showToast('SALA DE CONTROLE', 'ENCONTRE O BOTÃO VERMELHO', 'ENCOSTE NELE PARA DESLIGAR A IA', 3200);
+        }
+      }
+
+      if (bossState.phase === 'room') {
+        const shutdownButton = { x: BOSS_BUTTON_X, y: GROUND_Y - 82, w: 92, h: 82 };
+        if (rectsOverlap(player, shutdownButton) || (keys.interact && player.x > BOSS_BUTTON_X - 130)) activateShutdownButton();
+      }
+      keys.interact = false;
+    } else {
+      const cameraTarget = player.x - WIDTH * 0.36;
+      cameraX += (Math.max(0, Math.min(getCurrentStageWidth() - WIDTH, cameraTarget)) - cameraX) * Math.min(1, dt * 5);
+    }
   }
 
   function drawRoundedRect(x, y, w, h, radius, fill) {
@@ -977,6 +1239,118 @@
     frames.aligned = true;
     frames.baseline = commonBaseline || cellHeight;
     frames.referenceHeight = Math.max(1, frames.baseline - commonTop + 1);
+    return frames;
+  }
+
+  function analyzeSeparatedSpriteSheet(image, frameCount, padding = 5) {
+    const sheet = document.createElement('canvas');
+    sheet.width = image.naturalWidth;
+    sheet.height = image.naturalHeight;
+    const sheetContext = sheet.getContext('2d', { willReadFrequently: true });
+    sheetContext.drawImage(image, 0, 0);
+    const pixels = sheetContext.getImageData(0, 0, sheet.width, sheet.height).data;
+    const occupiedColumns = new Uint8Array(sheet.width);
+
+    for (let x = 0; x < sheet.width; x += 1) {
+      for (let y = 0; y < sheet.height; y += 1) {
+        if (pixels[(y * sheet.width + x) * 4 + 3] > 8) {
+          occupiedColumns[x] = 1;
+          break;
+        }
+      }
+    }
+
+    const runs = [];
+    let runStart = -1;
+    for (let x = 0; x <= sheet.width; x += 1) {
+      if (x < sheet.width && occupiedColumns[x] && runStart < 0) runStart = x;
+      if ((x === sheet.width || !occupiedColumns[x]) && runStart >= 0) {
+        runs.push([runStart, x]);
+        runStart = -1;
+      }
+    }
+
+    if (runs.length !== frameCount) return analyzeNormalizedSpriteSheet(image, frameCount, padding);
+
+    const frames = runs.map(([startX, endX]) => {
+      let minY = sheet.height;
+      let maxY = 0;
+      for (let y = 0; y < sheet.height; y += 1) {
+        for (let x = startX; x < endX; x += 1) {
+          if (pixels[(y * sheet.width + x) * 4 + 3] > 8) {
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+          }
+        }
+      }
+      const cropStartX = Math.max(0, startX - padding);
+      const cropEndX = Math.min(sheet.width, endX + padding);
+      const cropStartY = Math.max(0, minY - padding);
+      const cropEndY = Math.min(sheet.height, maxY + padding + 1);
+      return {
+        sx: cropStartX,
+        sy: cropStartY,
+        sw: cropEndX - cropStartX,
+        sh: cropEndY - cropStartY,
+        contentHeight: maxY - minY + 1,
+        contentBottom: maxY - cropStartY + 1,
+        anchorOffsetX: -(cropEndX - cropStartX) / 2
+      };
+    });
+
+    frames.normalized = true;
+    return frames;
+  }
+
+  function analyzeNormalizedGridSpriteSheet(image, columns, rows, padding = 5) {
+    const sheet = document.createElement('canvas');
+    sheet.width = image.naturalWidth;
+    sheet.height = image.naturalHeight;
+    const sheetContext = sheet.getContext('2d', { willReadFrequently: true });
+    sheetContext.drawImage(image, 0, 0);
+    const pixels = sheetContext.getImageData(0, 0, sheet.width, sheet.height).data;
+    const cellWidth = sheet.width / columns;
+    const cellHeight = sheet.height / rows;
+
+    const frames = Array.from({ length: columns * rows }, (_, frameIndex) => {
+      const column = frameIndex % columns;
+      const row = Math.floor(frameIndex / columns);
+      const cellStartX = Math.floor(column * cellWidth);
+      const cellEndX = Math.floor((column + 1) * cellWidth);
+      const cellStartY = Math.floor(row * cellHeight);
+      const cellEndY = Math.floor((row + 1) * cellHeight);
+      let minX = cellEndX;
+      let minY = cellEndY;
+      let maxX = cellStartX;
+      let maxY = cellStartY;
+
+      for (let y = cellStartY; y < cellEndY; y += 1) {
+        for (let x = cellStartX; x < cellEndX; x += 1) {
+          if (pixels[(y * sheet.width + x) * 4 + 3] > 8) {
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+          }
+        }
+      }
+
+      const cropStartX = Math.max(cellStartX, minX - padding);
+      const cropEndX = Math.min(cellEndX, maxX + padding + 1);
+      const cropStartY = Math.max(cellStartY, minY - padding);
+      const cropEndY = Math.min(cellEndY, maxY + padding + 1);
+      return {
+        sx: cropStartX,
+        sy: cropStartY,
+        sw: cropEndX - cropStartX,
+        sh: cropEndY - cropStartY,
+        contentHeight: maxY - minY + 1,
+        contentBottom: maxY - cropStartY + 1,
+        anchorOffsetX: cropStartX - cellStartX - cellWidth / 2
+      };
+    });
+
+    frames.normalized = true;
     return frames;
   }
 
@@ -1200,7 +1574,7 @@
   }
 
   function drawBossBackdrop() {
-    const towers = [[-100, 170, 260], [520, 220, 330], [1280, 150, 230], [1960, 260, 360], [2880, 190, 280], [3720, 240, 345], [4580, 210, 300]];
+    const towers = [[-100, 170, 260], [520, 220, 330], [1280, 150, 230], [1960, 260, 360], [2880, 190, 280], [3720, 240, 345], [4580, 210, 300], [5360, 235, 350], [6180, 190, 285]];
     for (const [worldX, width, height] of towers) {
       const x = Math.round(worldX - renderCameraX * 0.8);
       ctx.fillStyle = '#21183d';
@@ -1359,9 +1733,9 @@
       targetHeight = isTPose ? 97 : 90;
       allowFlip = false;
     } else if (player.hurtPose > 0) {
-      frame = 5;
+      frame = PLAYER_HURT_FRAME;
     } else if (!player.grounded) {
-      frame = 4;
+      frame = PLAYER_JUMP_FRAME;
     } else if ((keys.left || keys.right) && Math.abs(player.vx) > 18) {
       image = richardRunSprite;
       frames = runFrames;
@@ -1652,49 +2026,209 @@
 
   function drawBossPreview() {
     if (!stages[stageIndex].boss) return;
-    const x = Math.round(4850 - renderCameraX);
-    if (x < -220 || x > WIDTH + 220) return;
+    const time = performance.now() / 1000;
+    const cutscene = bossState?.phase === 'cutscene';
+    const damage = cutscene ? Math.min(1, bossState.cutsceneTimer / 4.2) : 0;
+    const attackKick = bossState?.attackFlash > 0
+      ? Math.sin((1 - bossState.attackFlash / 0.58) * Math.PI) * 26
+      : 0;
+    const x = -18 + Math.sin(time * 1.7) * 8 + attackKick;
+    const y = 80 + Math.sin(time * 2.25) * 9;
+    const w = 292;
+    const h = 330;
+    const lookY = player ? Math.max(-5, Math.min(7, (player.y + player.h / 2 - 250) / 28)) : 0;
 
     ctx.save();
-    ctx.shadowColor = '#ff5370';
-    ctx.shadowBlur = 30;
-    ctx.fillStyle = 'rgba(8, 9, 23, 0.92)';
+    ctx.strokeStyle = damage ? '#ff5370' : '#6875a8';
+    ctx.lineWidth = 8;
     ctx.beginPath();
-    ctx.ellipse(x, GROUND_Y - 105, 82, 112, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(x - 64, GROUND_Y - 178);
-    ctx.lineTo(x - 118, GROUND_Y - 238);
-    ctx.lineTo(x - 84, GROUND_Y - 144);
-    ctx.moveTo(x + 64, GROUND_Y - 178);
-    ctx.lineTo(x + 118, GROUND_Y - 238);
-    ctx.lineTo(x + 84, GROUND_Y - 144);
-    ctx.fill();
-    ctx.shadowBlur = 12;
+    ctx.moveTo(x + w - 12, y + 245);
+    ctx.bezierCurveTo(x + 330, y + 225 + Math.sin(time * 3.1) * 20, x + 315, y + 335, x + 360, y + 315 + Math.sin(time * 2.4) * 15);
+    ctx.moveTo(x + w - 22, y + 285);
+    ctx.bezierCurveTo(x + 320, y + 315, x + 292, y + 395 + Math.sin(time * 2.8) * 12, x + 345, y + 410);
+    ctx.stroke();
     ctx.fillStyle = '#ff5370';
-    ctx.fillRect(x - 37, GROUND_Y - 135, 18, 9);
-    ctx.fillRect(x + 19, GROUND_Y - 135, 18, 9);
+    ctx.fillRect(x + 345, y + 302 + Math.sin(time * 2.4) * 15, 28, 25);
+    ctx.fillRect(x + 332, y + 398, 28, 25);
+
+    ctx.shadowColor = '#ff5370';
+    ctx.shadowBlur = 24 + Math.sin(time * 5) * 5;
+    ctx.fillStyle = damage > 0.72 ? '#2b1827' : '#12152c';
+    ctx.fillRect(x, y, w, h);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#31395d';
+    ctx.fillRect(x + 15, y + 15, w - 30, h - 70);
+    ctx.fillStyle = damage > 0.45 && Math.floor(time * 14) % 2 ? '#fff' : '#09101e';
+    ctx.fillRect(x + 27, y + 28, w - 54, h - 96);
+
+    ctx.strokeStyle = damage ? '#ff5370' : '#6df3da';
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    ctx.moveTo(x + 76, y + 112);
+    ctx.lineTo(x + 112, y + 101 + Math.sin(time * 3) * 5);
+    ctx.moveTo(x + 173, y + 101 + Math.sin(time * 3) * 5);
+    ctx.lineTo(x + 210, y + 112);
+    ctx.stroke();
+    ctx.fillStyle = damage ? '#ff5370' : '#b9fff4';
+    ctx.beginPath();
+    ctx.arc(x + 103, y + 109 + lookY, 5, 0, Math.PI * 2);
+    ctx.arc(x + 183, y + 109 + lookY, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 143, y + 173, 48, damage > 0.35 ? Math.PI * 1.08 : 0.15, damage > 0.35 ? Math.PI * 1.92 : Math.PI - 0.15);
+    ctx.stroke();
+
+    ctx.fillStyle = '#202744';
+    ctx.fillRect(x + 70, y + h - 55, 145, 28);
+    ctx.fillStyle = '#ff5370';
+    ctx.font = 'bold 12px Funnel Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(cutscene ? 'ERRO CRÍTICO' : 'IA CENTRAL', x + w / 2, y + h - 41);
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillRect(x + 113, y + h - 27, 60, 55);
+    ctx.fillStyle = '#ff5370';
+    ctx.fillRect(x + 24, y + 45, 7, 86);
     ctx.restore();
 
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 18px Funnel Sans, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('CONFRONTO FINAL', x, GROUND_Y - 270);
-    ctx.fillStyle = stages[stageIndex].accent;
-    ctx.font = 'bold 13px Funnel Sans, sans-serif';
-    ctx.fillText('EM BREVE', x, GROUND_Y - 246);
+    if (cutscene) {
+      const burst = Math.min(1, bossState.cutsceneTimer / 3.4);
+      ctx.save();
+      ctx.globalAlpha = 1 - burst * 0.35;
+      for (let shard = 0; shard < 22; shard += 1) {
+        const angle = shard * 0.93;
+        const distance = burst * (80 + (shard % 7) * 24);
+        const sx = 125 + Math.cos(angle) * distance;
+        const sy = 225 + Math.sin(angle) * distance;
+        ctx.fillStyle = shard % 2 ? '#ff5370' : '#6df3da';
+        ctx.fillRect(sx, sy, 6 + shard % 4, 6 + (shard * 3) % 7);
+      }
+      ctx.restore();
+    }
+
+    if (bossState?.phase === 'room' || cutscene) {
+      const bx = Math.round(BOSS_BUTTON_X - renderCameraX);
+      ctx.fillStyle = '#2a2d45';
+      ctx.fillRect(bx - 12, GROUND_Y - 44, 116, 44);
+      ctx.fillStyle = '#171a2c';
+      ctx.fillRect(bx + 13, GROUND_Y - 76, 66, 38);
+      ctx.shadowColor = '#ff203f';
+      ctx.shadowBlur = bossState.buttonPressed ? 5 : 22;
+      ctx.fillStyle = bossState.buttonPressed ? '#5c1623' : '#ff203f';
+      ctx.beginPath();
+      ctx.ellipse(bx + 46, GROUND_Y - (bossState.buttonPressed ? 70 : 82), 35, 15, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 13px Funnel Sans, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(bossState.buttonPressed ? 'DESLIGANDO...' : 'BOTÃO DE EMERGÊNCIA', bx + 46, GROUND_Y - 110);
+    }
+  }
+
+  function drawBossProjectiles() {
+    if (!bossState || bossState.phase !== 'chase') return;
+    for (const projectile of bossState.projectiles) {
+      ctx.save();
+      if (projectile.type === 'ray') {
+        const charging = projectile.age < 0.82;
+        ctx.globalAlpha = charging ? 0.25 + Math.sin(projectile.age * 45) * 0.12 : 0.92;
+        ctx.fillStyle = charging ? '#ff5370' : '#fff';
+        ctx.shadowColor = '#ff205f';
+        ctx.shadowBlur = charging ? 10 : 28;
+        ctx.fillRect(190, projectile.y - (charging ? 3 : projectile.h / 2), WIDTH - 190, charging ? 6 : projectile.h);
+      } else if (projectile.type === 'plasma') {
+        const glow = ctx.createRadialGradient(projectile.x, projectile.y, 2, projectile.x, projectile.y, projectile.r * 1.7);
+        glow.addColorStop(0, '#fff');
+        glow.addColorStop(0.3, '#7af7ff');
+        glow.addColorStop(1, 'rgba(103, 68, 255, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(projectile.x, projectile.y, projectile.r * 1.7, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (projectile.type === 'wave') {
+        const charging = projectile.age < 0.5;
+        ctx.globalAlpha = charging ? 0.35 + Math.sin(projectile.age * 38) * 0.15 : 0.9;
+        ctx.shadowColor = '#6df3da';
+        ctx.shadowBlur = charging ? 10 : 24;
+        ctx.fillStyle = charging ? '#a6fff2' : '#6df3da';
+        ctx.beginPath();
+        ctx.moveTo(projectile.x, projectile.y + projectile.h);
+        for (let point = 0; point <= projectile.w; point += 12) {
+          const waveY = projectile.y + 8 + Math.sin(projectile.phase + point * 0.22) * 8;
+          ctx.lineTo(projectile.x + point, waveY);
+        }
+        ctx.lineTo(projectile.x + projectile.w, projectile.y + projectile.h);
+        ctx.closePath();
+        ctx.fill();
+      } else if (projectile.type === 'shard') {
+        ctx.translate(projectile.x, projectile.y);
+        ctx.rotate(projectile.rotation);
+        ctx.shadowColor = '#ff4f9a';
+        ctx.shadowBlur = 16;
+        ctx.fillStyle = projectile.age < 0.38 ? 'rgba(255,79,154,0.45)' : '#ff4f9a';
+        ctx.beginPath();
+        ctx.moveTo(0, -projectile.size);
+        ctx.lineTo(projectile.size * 0.72, 0);
+        ctx.lineTo(0, projectile.size);
+        ctx.lineTo(-projectile.size * 0.72, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(-2, -projectile.size * 0.55, 4, projectile.size * 1.1);
+      } else {
+        ctx.translate(projectile.x, projectile.y);
+        ctx.rotate(projectile.rotation);
+        ctx.fillStyle = '#ffb347';
+        for (let tooth = 0; tooth < 8; tooth += 1) {
+          ctx.rotate(Math.PI / 4);
+          ctx.fillRect(-6, -projectile.r - 7, 12, 14);
+        }
+        ctx.beginPath();
+        ctx.arc(0, 0, projectile.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#28243d';
+        ctx.beginPath();
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+
+  function drawBossCutscene() {
+    if (!bossState || bossState.phase !== 'cutscene') return;
+    const timer = bossState.cutsceneTimer;
+    const flash = timer > 3.1 ? Math.max(0, 1 - Math.abs(timer - 3.55) * 2.2) : 0;
+    if (flash > 0) {
+      ctx.fillStyle = `rgba(255,255,255,${flash})`;
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    }
+    if (timer > 3.7) {
+      ctx.fillStyle = `rgba(5,7,18,${Math.min(0.82, (timer - 3.7) * 0.8)})`;
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+      ctx.fillStyle = '#6df3da';
+      ctx.font = 'bold 18px Funnel Sans, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('SISTEMA DA IA DESTRUÍDO', WIDTH / 2, 245);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 42px Gilda Display, serif';
+      ctx.fillText('A história voltou às mãos da humanidade.', WIDTH / 2, 302);
+    }
   }
 
   function drawStageProgress() {
     const stage = stages[stageIndex];
     const progressText = stage.boss
-      ? 'FINAL  •  ARENA DO CHEFE'
+      ? (bossState?.phase === 'chase' ? 'FINAL  •  CORRA DA IA' : bossState?.phase === 'room' ? 'FINAL  •  DESLIGUE O SISTEMA' : 'FINAL  •  SISTEMA EM COLAPSO')
       : `FASE ${stageIndex + 1}/${MAIN_STAGE_COUNT}  •  ${stageCollected}/${stage.items.length} ITENS`;
-    drawRoundedRect(24, 22, stage.boss ? 270 : 215, 38, 6, 'rgba(20, 23, 42, 0.72)');
+    const panelWidth = stage.boss ? 270 : 215;
+    const panelX = stage.boss ? WIDTH - panelWidth - 24 : 24;
+    drawRoundedRect(panelX, 22, panelWidth, 38, 6, 'rgba(20, 23, 42, 0.72)');
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 13px Funnel Sans, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(progressText, 42, 47);
+    ctx.fillText(progressText, panelX + 18, 47);
   }
 
   function drawTransition() {
@@ -1706,6 +2240,10 @@
 
   function draw() {
     renderCameraX = Math.round(cameraX);
+    ctx.save();
+    if (bossState?.phase === 'cutscene' && bossState.shake > 0) {
+      ctx.translate((Math.random() - 0.5) * bossState.shake, (Math.random() - 0.5) * bossState.shake);
+    }
     drawBackground();
     drawGround();
     drawPlatforms();
@@ -1714,9 +2252,12 @@
     for (const enemy of enemies) if (enemy.alive) drawEnemy(enemy);
     drawPortal();
     drawBossPreview();
+    drawBossProjectiles();
     drawPlayer();
     drawStageProgress();
     drawTransition();
+    drawBossCutscene();
+    ctx.restore();
   }
 
   function loop(time) {
@@ -1731,18 +2272,29 @@
   }
 
   function handleKey(event, pressed) {
+    if (pressed && !event.repeat && (event.ctrlKey || event.metaKey) && event.code === 'KeyB') {
+      event.preventDefault();
+      startBossShortcut();
+      return;
+    }
+    if (pressed && !event.repeat && (event.ctrlKey || event.metaKey) && event.code === 'KeyR') {
+      event.preventDefault();
+      resetWithShortcut();
+      return;
+    }
     if (pressed && !event.repeat && (event.ctrlKey || event.metaKey) && Object.hasOwn(DEV_STAGE_SHORTCUTS, event.code)) {
       event.preventDefault();
       devTeleportToStage(DEV_STAGE_SHORTCUTS[event.code]);
       return;
     }
-    const controlKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'Space', 'KeyA', 'KeyD', 'KeyW', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Numpad1', 'Numpad2', 'Numpad3', 'Numpad4'];
+    const controlKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'Space', 'KeyA', 'KeyD', 'KeyW', 'KeyE', 'Enter', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Numpad1', 'Numpad2', 'Numpad3', 'Numpad4'];
     if (controlKeys.includes(event.code)) event.preventDefault();
     if (pressed && Object.hasOwn(EMOTE_FRAME_BY_KEY, event.code)) startEmote(EMOTE_FRAME_BY_KEY[event.code]);
     if (pressed && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'Space', 'KeyA', 'KeyD', 'KeyW'].includes(event.code)) cancelEmote();
     if (event.code === 'ArrowLeft' || event.code === 'KeyA') keys.left = pressed;
     if (event.code === 'ArrowRight' || event.code === 'KeyD') keys.right = pressed;
     if ((event.code === 'ArrowUp' || event.code === 'Space' || event.code === 'KeyW') && pressed) keys.jump = true;
+    if (event.code === 'KeyE' || event.code === 'Enter') keys.interact = pressed;
   }
 
   window.addEventListener('keydown', event => handleKey(event, true));
@@ -1770,24 +2322,37 @@
     button.addEventListener('pointerleave', release);
   });
 
-  richardSprite.addEventListener('load', () => {
-    spriteFrames = analyzeNormalizedSpriteSheet(richardSprite, SPRITE_FRAME_COUNT);
-    if (!running) draw();
-  });
-  richardRunSprite.addEventListener('load', () => {
-    runFrames = analyzeNormalizedSpriteSheet(richardRunSprite, 8);
-    if (!running) draw();
-  });
-  richardEmoteSprite.addEventListener('load', () => {
-    emoteFrames = analyzeSpriteSheet(richardEmoteSprite, 3, true);
-    if (!running) draw();
-  });
-  richardTPoseSprite.addEventListener('load', () => {
-    tPoseFrames = analyzeSpriteSheet(richardTPoseSprite, 1, true);
-    if (!running) draw();
-  });
   resetGame();
   updateMusicControl();
   renderTitleScreen();
   draw();
+
+  const prepareRichardIdleFrames = () => {
+    spriteFrames = analyzeSeparatedSpriteSheet(richardSprite, SPRITE_FRAME_COUNT, 7);
+    if (!running) draw();
+  };
+  const prepareRichardRunFrames = () => {
+    runFrames = analyzeNormalizedGridSpriteSheet(richardRunSprite, 4, 3, 7);
+    if (!running) draw();
+  };
+  const prepareRichardEmoteFrames = () => {
+    emoteFrames = analyzeSpriteSheet(richardEmoteSprite, 3, true);
+    if (!running) draw();
+  };
+  const prepareRichardTPoseFrames = () => {
+    tPoseFrames = analyzeSpriteSheet(richardTPoseSprite, 1, true);
+    if (!running) draw();
+  };
+
+  richardSprite.addEventListener('load', prepareRichardIdleFrames);
+  richardRunSprite.addEventListener('load', prepareRichardRunFrames);
+  richardEmoteSprite.addEventListener('load', prepareRichardEmoteFrames);
+  richardTPoseSprite.addEventListener('load', prepareRichardTPoseFrames);
+
+  // Imagens em cache podem terminar de carregar antes do listener ser registrado.
+  // A preparação imediata evita que o desenho quadrado de emergência permaneça na tela.
+  if (richardSprite.complete && richardSprite.naturalWidth) prepareRichardIdleFrames();
+  if (richardRunSprite.complete && richardRunSprite.naturalWidth) prepareRichardRunFrames();
+  if (richardEmoteSprite.complete && richardEmoteSprite.naturalWidth) prepareRichardEmoteFrames();
+  if (richardTPoseSprite.complete && richardTPoseSprite.naturalWidth) prepareRichardTPoseFrames();
 })();
