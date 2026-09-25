@@ -469,6 +469,80 @@ button {
   letter-spacing: 0.04em;
 }
 
+.victory-applause {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1.8rem;
+  min-height: 14rem;
+  margin: -1.2rem auto 1.2rem;
+  overflow: hidden;
+}
+
+.victory-applause__person {
+  display: grid;
+  align-items: end;
+  animation: applause-bounce 340ms ease-in-out infinite alternate;
+}
+
+.victory-applause__person:nth-child(2) {
+  animation-delay: -120ms;
+}
+
+.victory-applause__person:nth-child(3) {
+  animation-delay: -240ms;
+}
+
+.victory-applause__sprite {
+  display: block;
+  height: 13.5rem;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 600% 100%;
+  image-rendering: pixelated;
+  animation: applause-frames 720ms steps(5, end) infinite;
+}
+
+.victory-applause__sprite--conductor,
+.victory-applause__sprite--blue {
+  width: 6.75rem;
+}
+
+.victory-applause__sprite--conductor {
+  background-image: url("fotos/aplausos-regente.png");
+}
+
+.victory-applause__sprite--blue {
+  background-image: url("fotos/aplausos-azul.png");
+  animation-delay: -120ms;
+}
+
+.victory-applause__sprite--bowtie {
+  width: 4.9rem;
+  background-image: url("fotos/aplausos-gravata.png");
+  animation-delay: -240ms;
+}
+
+@keyframes applause-frames {
+  from {
+    background-position: 0 100%;
+  }
+
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes applause-bounce {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-0.22rem);
+  }
+}
+
 .menu-actions {
   display: flex;
   flex-wrap: wrap;
@@ -985,5 +1059,14 @@ kbd {
   *::before,
   *::after {
     transition: none !important;
+  }
+
+  .victory-applause__person,
+  .victory-applause__sprite {
+    animation: none;
+  }
+
+  .victory-applause__sprite {
+    background-position: 40% 100%;
   }
 }
